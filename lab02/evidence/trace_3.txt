@@ -1,0 +1,25 @@
+Question: In what year was the University of Ghana founded, and how many years ago was that from 2026?
+Model: groq/openai/gpt-oss-20b
+
+Question: In what year was the University of Ghana founded, and how many years ago was that from 2026?
+--- Step 1 ---
+Thought: (model tried a native function call; converted to text)
+Action: wiki_lookup
+Action Input: University of Ghana
+Observation: The University of Ghana is a public university located in Accra, Ghana. It is the oldest public university in the country.
+--- Step 2 ---
+Thought: (model tried a native function call; converted to text)
+Action: wiki_lookup
+Action Input: University of Ghana
+Observation: The University of Ghana is a public university located in Accra, Ghana. It is the oldest public university in the country.
+--- Step 3 ---
+Thought: (model tried a native function call; converted to text)
+Action: calculator
+Action Input: 2026-1948
+Observation: 78
+--- Step 4 ---
+Thought: (model tried a native function call; converted to text)
+Action: finish
+Action Input: The University of Ghana was founded in 1948, which was 78 years ago from 2026.
+
+Final answer: The University of Ghana was founded in 1948, which was 78 years ago from 2026.

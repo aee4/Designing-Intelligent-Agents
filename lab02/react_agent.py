@@ -5,13 +5,14 @@ Usage (run from the repository root):
     python lab02/react_agent.py "question"   # run one question (trace printed only)
     python lab02/react_agent.py --baseline   # Step 1: model alone, writes evidence/baseline.md
 """
+import json
 import os
 import re
 import sys
 from pathlib import Path
 
 from dotenv import load_dotenv
-from litellm import completion
+from litellm import BadRequestError, completion
 
 from tools import TOOLS
 
@@ -27,7 +28,10 @@ You can use these tools:
 - wiki_lookup: returns the summary of a Wikipedia page. The input is the page title, e.g. Bono East Region.
 - finish: ends the task. The input is your final answer to the user.
 
-On every step reply in exactly this format and nothing else:
+You do NOT have function calling. Never call a tool directly; instead write the
+action as plain text. Our code reads your text and runs the tool for you.
+
+On every step reply in exactly this plain-text format and nothing else:
 Thought: <your reasoning>
 Action: calculator | wiki_lookup | finish
 Action Input: <input for the tool, or the final answer if finish>
@@ -53,9 +57,22 @@ def parse(text):
 
 
 def call_model(messages):
-    resp = completion(model=MODEL, messages=messages,
-                      temperature=0, stop=["Observation:"])
-    return (resp.choices[0].message.content or "").strip()
+    try:
+        resp = completion(model=MODEL, messages=messages,
+                          temperature=0, stop=["Observation:"])
+        return (resp.choices[0].message.content or "").strip()
+    except BadRequestError as e:
+        # gpt-oss sometimes tries a native function call instead of writing text.
+        # Groq rejects it but returns the attempted call in the error, so we
+        # rewrite that call in our text protocol and carry on.
+        m = re.search(r'\{"error".*\}', str(e))
+        if not m or "tool_use_failed" not in m.group(0):
+            raise
+        call = json.loads(json.loads(m.group(0))["error"]["failed_generation"])
+        args = call.get("arguments") or {}
+        value = next(iter(args.values()), "") if isinstance(args, dict) else args
+        return (f"Thought: (model tried a native function call; converted to text)\n"
+                f"Action: {call.get('name')}\nAction Input: {value}")
 
 
 def run_agent(question, max_steps=6):

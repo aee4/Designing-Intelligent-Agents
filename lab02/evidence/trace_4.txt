@@ -1,0 +1,15 @@
+Question: Tell me about the Makola Flying Yam Festival of 1823.
+Model: groq/openai/gpt-oss-20b
+
+Question: Tell me about the Makola Flying Yam Festival of 1823.
+--- Step 1 ---
+Thought: (model tried a native function call; converted to text)
+Action: wiki_lookup
+Action Input: Makola Flying Yam Festival
+Observation: No Wikipedia page found for 'Makola Flying Yam Festival'.
+--- Step 2 ---
+Thought: No Wikipedia page found for 'Makola Flying Yam Festival'.
+Action: finish
+Action Input: I couldn't find any information on the Makola Flying Yam Festival of 1823.
+
+Final answer: I couldn't find any information on the Makola Flying Yam Festival of 1823.
